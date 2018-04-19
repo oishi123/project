@@ -16,34 +16,34 @@ class CampInstructorTest < ActiveSupport::TestCase
   context "Within context" do
     setup do 
       create_curriculums
+      create_users
+       create_instructors
       create_active_locations
-      create_instructors
+     
       create_camps
       create_camp_instructors
+      
     end
     
     teardown do
-      delete_curriculums
-      delete_active_locations
-      delete_instructors
-      delete_camps
-      delete_camp_instructors
+    
     end
 
     should "not allow the same instructor to assigned twice to the same camp" do
-      bad_assignment = FactoryBot.build(:camp_instructor, instructor: @mark, camp: @camp4)
+     
+      bad_assignment = FactoryBot.build(:camp_instructor, instructor: @alex, camp: @camp1)
       deny bad_assignment.valid?
     end
 
     should "not allow the same instructor to assigned to another camp at the same time" do
       camp5 = FactoryBot.create(:camp, curriculum: @tactics, location: @north)    
-      bad_assignment = FactoryBot.build(:camp_instructor, instructor: @mark, camp: camp5)
+      bad_assignment = FactoryBot.build(:camp_instructor, instructor: @alex, camp: @camp5)
       deny bad_assignment.valid?
-      camp5.delete
+     
     end
 
     should "not allow an instructor to assigned an inactive camp" do
-      bad_assignment = FactoryBot.build(:camp_instructor, instructor: @mark, camp: @camp3)
+      bad_assignment = FactoryBot.build(:camp_instructor, instructor: @alex, camp: @camp100)
       deny bad_assignment.valid?
     end
 

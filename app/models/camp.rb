@@ -4,6 +4,8 @@ class Camp < ApplicationRecord
   belongs_to :location
   has_many :camp_instructors
   has_many :instructors, through: :camp_instructors
+  has_many :registrations
+  has_many :students, through: :registrations
 
   # validations
   validates_presence_of :location_id, :curriculum_id, :time_slot, :start_date
@@ -27,7 +29,8 @@ class Camp < ApplicationRecord
   scope :upcoming, -> { where('start_date >= ?', Date.today) }
   scope :past, -> { where('end_date < ?', Date.today) }
   scope :for_curriculum, ->(curriculum_id) { where("curriculum_id = ?", curriculum_id) }
-  
+   scope :full, -> { joins(:registrations).group(:camp_id).having('count(*) = max_students') }
+ # scope :empty, -> 
     # instance methods
   def name
     self.curriculum.name
@@ -37,9 +40,15 @@ class Camp < ApplicationRecord
     Camp.where(time_slot: self.time_slot, start_date: self.start_date, location_id: self.location_id).size == 1
   end
 
-  # callbacks
-  before_update :remove_instructors_from_inactive_camp
-
+  def is_full?
+    self.max_students == self.registrations.count
+  end
+  
+  def enrollment
+    self.registrations.count
+  end
+  
+ 
   # private
   def curriculum_is_active_in_the_system
     return if self.curriculum.nil?
@@ -65,10 +74,10 @@ class Camp < ApplicationRecord
     end
   end
 
-  def remove_instructors_from_inactive_camp
-    # confirm that camp is marked as inactive
-    if !self.active
-      self.camp_instructors.each{|ci| ci.destroy}
-    end
-  end
+ 
+  
+ 
+  
+  
+
 end

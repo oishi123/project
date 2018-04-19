@@ -6,7 +6,7 @@ class LocationTest < ActiveSupport::TestCase
 
   # test validations
   should validate_presence_of(:name)
-  should validate_uniqueness_of(:name).case_insensitive
+ 
   should validate_presence_of(:street_1)
   should validate_presence_of(:zip)
   should validate_presence_of(:max_capacity)
@@ -45,15 +45,27 @@ class LocationTest < ActiveSupport::TestCase
     end
 
     should "show that there are two locations in in alphabetical order" do
-      assert_equal ["Carnegie Mellon", "North Side"], Location.alphabetical.all.map(&:name)
+      assert_equal ["Ec", "North Side"], Location.alphabetical.all.map(&:name)
     end
 
     should "show that there are two active locations and one inactive location" do
       create_inactive_locations
-      assert_equal ["Carnegie Mellon", "North Side"], Location.active.all.map(&:name).sort
+      assert_equal ["Ec", "North Side"], Location.active.all.map(&:name).sort
       assert_equal ["Squirrel Hill"], Location.inactive.all.map(&:name).sort
       delete_inactive_locations
     end
 
+
+    should "not allow locations with past camps to be destroyed" do
+      create_curriculums
+      create_camps
+      create_family_users
+      create_families
+      create_students
+      @camp1.update_attribute(:start_date, 52.weeks.ago.to_date)
+      @camp1.update_attribute(:end_date, 51.weeks.ago.to_date)
+      assert_not @cmu.destroy      
+     
+    end
   end
 end

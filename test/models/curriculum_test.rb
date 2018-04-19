@@ -6,7 +6,7 @@ class CurriculumTest < ActiveSupport::TestCase
 
   # test validations
   should validate_presence_of(:name)
-  should validate_uniqueness_of(:name).case_insensitive
+ # should validate_uniqueness_of(:name).case_insensitive
 
   should allow_value(1000).for(:min_rating)
   should allow_value(100).for(:min_rating)
@@ -46,9 +46,7 @@ class CurriculumTest < ActiveSupport::TestCase
     end
     
     # and provide a teardown method as well
-    teardown do
-      delete_curriculums
-    end
+   
 
     # test the scope 'alphabetical'
     should "shows that there are three curriculums in in alphabetical order" do
@@ -72,6 +70,25 @@ class CurriculumTest < ActiveSupport::TestCase
       assert_equal 1, Curriculum.for_rating(1400).size
       assert_equal ["Mastering Chess Tactics","Smith-Morra Gambit"], Curriculum.for_rating(600).all.map(&:name).sort
     end
+    
+    should "show that curriculums cannot be destroyed" do
+      assert_not @tactics.destroy
+    end
+    
+  #   should "show that curriculum is not active for an upcoming camp" do
+      
+  #     @curriculum = FactoryBot.create(:curriculum,  name: "CS", min_rating: 700, max_rating: 3000, active: true)
+  #     @cmu = FactoryBot.create(:location) 
+  #     @fareej =  FactoryBot.create(:camp,  curriculum: @curriculum, start_date: Date.new(2018,10,3), end_date: Date.new(2018,10,7), time_slot: "am", location: @cmu, active: true)
+  #     @kamath_user = FactoryBot.create(:user, username: "win", role: "parent", phone: "123-867-8904", email: "akammmath@qatar.cmu.edu" , password: "hates" , password_confirmation: "hates")
+  #     @kamath = FactoryBot.create(:family, user: @kamath_user, family_name: "Kamath" , active: true)
+  #     @ashwini = FactoryBot.create(:student, family: @kamath, rating: 2010 , first_name: "Ashwini" , last_name: "Kamath" , date_of_birth: 21.years.ago.to_date)
+  #     @ashwini_reg = FactoryBot.create(:registration, camp: @fareej , student: @ashwini)
+  #     @curriculum.update_attribute(:active , false)
+  #     assert_equal true, @curriculum.active
+  # end
+  
+  
 
   end
 end

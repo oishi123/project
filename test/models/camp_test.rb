@@ -162,30 +162,91 @@ class CampTest < ActiveSupport::TestCase
     end
 
     should "remove instructors from inactive camps" do
-      create_instructors
-      create_camp_instructors
+     
       # we've created no registrations, so all camps are capable of being made inactive
       deny @camp1.camp_instructors.to_a.empty?
       @camp1.active = false
       @camp1.save
       @camp1.reload
       assert @camp1.camp_instructors.to_a.empty?
-      delete_camp_instructors
-      delete_instructors
+    
     end
 
-    should "not remove instructors from edited, active camps" do
-      create_instructors
-      create_camp_instructors
-      deny @camp1.camp_instructors.to_a.empty?
-      total_instructors = @camp1.camp_instructors.count
-      @camp1.max_students -= 1
-      @camp1.save
-      @camp1.reload
-      assert_equal(@camp1.camp_instructors.count, total_instructors)
-      delete_camp_instructors
-      delete_instructors
+   
+     
+     
+     should "have 'full' scope to find camps at max " do
+      create_family_users
+      create_families
+      create_students
+      create_registrations
+      assert_equal [], Camp.full
+      @camp4.max_students = 3
+      @camp4.save
+      assert_equal [@camp4], Camp.full
+     
+    end
+    
+     should "have 'enrollment' instance method" do
+      create_family_users
+      create_families
+      create_students
+      create_registrations
+     
+      assert_equal 0, @camp3.enrollment
+      assert_equal 0, @camp1.enrollment
+      assert_equal 0, @camp4.enrollment
+      # reduce max students of camp 4 so it will register as full
+      @camp4.max_students = 3
+      @camp4.save
+      assert_not @camp4.is_full?
+     
+    end
+    
+     should "have 'is_full? ' instance method" do
+      create_family_users
+      create_families
+      create_students
+      create_registrations
+      @camp4.max_students = 3
+      @camp4.save
+      assert_not @camp4.is_full?
+    
+    end
+    should "confirm no registrations prior to destroying camp" do
+      @empty_camp = FactoryBot.create(:camp, curriculum: @endgames, location: @cmu, start_date: 9.days.from_now.to_date, end_date: 13.days.from_now.to_date)
+      assert @empty_camp.destroy
     end
 
+    should "confirm a camp with registrations not destroyed" do
+      create_family_users
+      create_families
+      create_students
+      create_registrations
+      deny @camp1.destroy
+     
+    end
+
+    should "confirm no registrations prior to making camp inactive" do
+      @empty_camp = FactoryBot.create(:camp, curriculum: @endgames, location: @cmu, start_date: 9.days.from_now.to_date, end_date: 13.days.from_now.to_date)
+      @empty_camp.active = false
+      assert @empty_camp.valid?, "#{@empty_camp.to_yaml}"
+      @empty_camp.destroy
+    end
+
+    should "confirm a camp with registrations cannot be made inactive" do
+      create_family_users
+      create_families
+      create_students
+      create_registrations
+      @camp1.active = false
+      deny @camp1.valid?, "#{@camp1.to_yaml}"
+     
+    end
+
+    
+    
+    
+    
   end
 end

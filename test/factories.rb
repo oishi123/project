@@ -1,4 +1,36 @@
 FactoryBot.define do
+ 
+  # factory :instructor do
+  #   first_name "MyString"
+  #   last_name "MyString"
+  #   bio "MyText"
+  #   email "MyString"
+  #   phone "MyString"
+  #   active false
+   
+  # end
+  factory :user do
+    username "tank"
+   
+    role "instructor"
+   
+  end
+  factory :student do
+    first_name "Ashwini"
+    last_name "Kamath"
+   
+    rating 2010
+    active true
+  end
+  factory :registration do
+    association :camp
+    association :student
+  end
+  factory :family do
+    family_name "Ahmed"
+    parent_first_name "Aahil"
+   
+  end
   
   factory :curriculum do
     name "Mastering Chess Tactics"
@@ -12,8 +44,7 @@ FactoryBot.define do
     first_name "Mark"
     last_name "Heimann"
     bio "Mark is currently among the top 150 players in the United States and has won 4 national scholastic chess championships."
-    phone { rand(10 ** 10).to_s.rjust(10,'0') }
-    email { |i| "#{i.first_name[0]}#{i.last_name}#{(1..99).to_a.sample}@example.com".downcase }
+    
     active true
   end
   
@@ -29,18 +60,15 @@ FactoryBot.define do
   end
   
   factory :camp_instructor do 
-    association :camp
-    association :instructor
-  end
+     association :camp
+     association :instructor
+   end
 
   factory :location do
-    name "Carnegie Mellon"
-    street_1 "5000 Forbes Avenue"
-    street_2 "Porter Hall 222"
-    city "Pittsburgh"
-    state "PA"
+    name "Ec"
+    street_1 "al-luqta"
     zip "15213"
-    max_capacity 16
+    max_capacity 100
     active true
   end
 
